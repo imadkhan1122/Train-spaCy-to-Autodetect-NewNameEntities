@@ -10,6 +10,8 @@ Original file is located at
 # Introduction
 # Load a spacy model and chekc if it has ner
 import spacy
+import secrets
+
 nlp=spacy.load('en_core_web_sm')
 
 nlp.pipe_names
@@ -74,11 +76,6 @@ for _, annotations in TRAIN_DATA:
 # Disable pipeline components you dont need to change
 pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
 unaffected_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
-
-# Training the NER model
-
-# Import requirements
-import random
 from spacy.util import minibatch, compounding
 from pathlib import Path
 
@@ -89,7 +86,7 @@ with nlp.disable_pipes(*unaffected_pipes):
   for iteration in range(30):
 
     # shuufling examples  before every iteration
-    random.shuffle(TRAIN_DATA)
+    secrets.SystemRandom().shuffle(TRAIN_DATA)
     losses = {}
     # batch up the examples using spaCy's minibatch
     batches = minibatch(TRAIN_DATA, size=compounding(4.0, 32.0, 1.001))
@@ -173,7 +170,6 @@ other_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
 
 # Importing requirements
 from spacy.util import minibatch, compounding
-import random
 
 # Begin training by disabling other pipeline components
 with nlp.disable_pipes(*other_pipes) :
@@ -182,7 +178,7 @@ with nlp.disable_pipes(*other_pipes) :
   # Training for 30 iterations     
   for itn in range(30):
     # shuffle examples before training
-    random.shuffle(TRAIN_DATA)
+    secrets.SystemRandom().shuffle(TRAIN_DATA)
     # batch up the examples using spaCy's minibatch
     batches = minibatch(TRAIN_DATA, size=sizes)
     # ictionary to store losses
